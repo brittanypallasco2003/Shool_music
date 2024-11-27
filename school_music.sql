@@ -63,3 +63,109 @@ VALUES
     (1756871852, 4, '2024-04-05', TRUE),
     (1745998534, 5, '2024-05-12', FALSE)
 ;
+
+-- Encuentra los estudiantes que están registrados en el curso de "Piano Avanzado".
+
+SELECT st.id_student, CONCAT(st.name,' ',st.lastname) as student_name, name_course
+from students as st, registrations as rg, courses as cr
+WHERE st.id_student=rg.id_student and cr.id_course= rg.id_course AND cr.name_course='Piano Avanzado';
+
+
+SELECT st.id_student, CONCAT(st.name,' ',st.lastname) as student_name, name_course
+from students as st JOIN registrations as rg ON st.id_student=rg.id_student JOIN courses as cr ON cr.id_course=rg.id_course
+WHERE name_course='Piano Avanzado';
+
+-- Muestra solo los nombres de todos los cursos ofrecidos.
+SELECT name_course
+FROM courses;
+
+-- Calcula cuántas inscripciones hay en total.
+SELECT COUNT(*) AS total_registrations
+FROM registrations;
+
+-- Muestra los estudiantes que se registraron después del 1 de abril de 2024.
+SELECT st.id_student, CONCAT(st.name,' ',st.lastname), id_registration, registration_date
+from students st JOIN registrations rg ON st.id_student=rg.id_student
+WHERE registration_date>'2024-04-01';
+
+-- Contar la cantidad de alumnos que han abonado la inscripción
+
+SELECT COUNT(*) as number_registered_students
+from registrations
+WHERE registration_payment=TRUE;
+
+-- Lista las inscripciones donde el pago ha sido realizado 
+SELECT *
+from registrations
+WHERE registration_payment=TRUE;
+
+-- Encuentra todos los cursos que tienen el nivel de habilidad 'Principiante'.
+
+SELECT *
+FROM courses
+WHERE skill_level='Principiante';
+
+-- Encuentra estudiantes cuyos números de teléfono terminen en '567'.
+
+SELECT id_student, CONCAT(name,' ',lastname) as student_name, phone_number
+FROM students
+WHERE phone_number LIKE '%567';
+
+
+-- Mostrar los nombres de los estudiantes y los cursos en los que están inscritos
+SELECT CONCAT(name,' ',lastname) as student_name, name_course
+from students st JOIN registrations rg ON st.id_student=rg.id_student JOIN courses cr on rg.id_course=cr.id_course;
+
+-- Obtener el nombre y apellido de los alumnos que están inscritos en más de un curso
+SELECT st.id_student, CONCAT(name,' ',lastname) as student_name, COUNT(*) as number_courses_registered
+from students st JOIN registrations rg ON st.id_student=rg.id_student JOIN courses cr on rg.id_course=cr.id_course
+GROUP BY st.id_student
+HAVING COUNT(*)>1;
+
+-- Muestra el nombre del estudiante junto con la cantidad de cursos en los que está inscrito.
+SELECT st.id_student, CONCAT(name,' ',lastname) as student_name, COUNT(*) as number_courses_registered
+from students st JOIN registrations rg ON st.id_student=rg.id_student JOIN courses cr on rg.id_course=cr.id_course
+GROUP BY st.id_student;
+
+-- Estudiantes no registrados en ningún curso:
+SELECT *
+FROM students
+WHERE id_student NOT IN ( SELECT id_student
+FROM registrations);
+
+-- Encuentra los cursos que no tienen ninguna inscripción.
+SELECT *
+FROM courses
+WHERE id_course NOT IN( SELECT id_course
+FROM registrations);
+
+-- Buscar el curso con más inscripciones
+SELECT c.id_course, c.name_course, COUNT(*) as number_registrations
+FROM courses c JOIN registrations r on c.id_course=r.id_course
+GROUP BY c.id_course
+ORDER BY number_registrations DESC
+-- LIMIT 1;
+
+-- Estudiantes que han realizado pagos en todos sus cursos:
+SELECT id_student, CONCAT(name,' ',lastname)
+FROM students
+WHERE id_student NOT IN(SELECT id_student
+from registrations
+WHERE registration_payment=FALSE);
+
+SELECT id_student, CONCAT(name,' ',lastname)
+FROM STUDENTS S
+WHERE NOT EXISTS (
+    SELECT 1
+FROM REGISTRATIONS R
+WHERE R.id_student = S.id_student
+    AND R.registration_payment = FALSE
+);
+
+-- Inscripciones con la fecha más reciente:
+SELECT *
+FROM REGISTRATIONS
+WHERE registration_date = (SELECT MAX(registration_date)
+FROM REGISTRATIONS);
+
+
