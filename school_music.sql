@@ -144,7 +144,7 @@ SELECT c.id_course, c.name_course, COUNT(*) as number_registrations
 FROM courses c JOIN registrations r on c.id_course=r.id_course
 GROUP BY c.id_course
 ORDER BY number_registrations DESC
--- LIMIT 1;
+LIMIT 1;
 
 -- Estudiantes que han realizado pagos en todos sus cursos:
 SELECT id_student, CONCAT(name,' ',lastname)
